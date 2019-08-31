@@ -1,36 +1,37 @@
+(*
+  This file is a fun study of both ways in which we are able to program 
+  and also how we describe numbers (and more generally, things that are countable) 
+  on a more fundamental level.
+
+  The first idea presented is that of inhabitance vs voidence as integral parts to how we think about numbers.
+  That is to say, for all numbers, there either is some units, or there is None. 
+  We can now make two sets for every representation of numbers: ones that contain zero or not (or also defined as inhabited or voided).
+
+  One can make the the connection to Modal Logic where as types that are always inhabited are Neccessarily so 
+  and types that are not always inhabited are only possibly so. We will use this terminology to describe our types.
+
+
+  First let's describe our inhabited (non-zero) Natural numbers as 'Necessarily Naturals'.
+ *)
+
 Inductive Nec_Nat : Type :=
-| Unit : Nec_Nat
-| More : Nec_Nat -> Nec_Nat
+    | Unit : Nec_Nat
+    | More : Nec_Nat -> Nec_Nat
 .
 
-Fixpoint Nec_Nat_g (a : nat) : Nec_Nat :=
-match a with
-| 0   => Unit
-| S n => More (Nec_Nat_g n)
-end .
+(* 
+    How using this definition, we can easily construct the complete Natural numbers as 'Possibly Naturals'.
+*)
 
 Definition Pos_Nat := option Nec_Nat.
 
-(*
-Fixpoint Pos_Nat_f (a : Pos_Nat) : nat :=
-match a with
-| None          => 0
-| Some x        => 1 + (Nec_Nat_f x)
-end.
+(* 
+    On Countable numbers.
+    In order to prove that something is countable, we must be able to step through each element one by one.
+    Also, we must prove that the thing is isomorphic to the Natural Numbers. 
+
+    Here is our definition of Isomorphism, some following proofs and helpers definitons.
 *)
-
-Fixpoint Pos_Nat_g (a : nat) : Pos_Nat :=
-match a with
-| 0     => None
-| S n   => Some (Nec_Nat_g n)
-end.
-
-Inductive Nec_Int : Type :=
-| Pos : Nec_Nat -> Nec_Int
-| Neg : Nec_Nat -> Nec_Int
-.
-
-Definition Pos_Int := option Nec_Int.
 
 Definition Iso (A : Type) (B : Type) (f : A -> B) (g : B -> A) : Prop :=
     forall x : A         ,
@@ -116,7 +117,37 @@ destruct H with (x := x) (y := f x).
 destruct H0 with (x := f x) (y := y).
 unfold compose.
 transitivity (f' (g' y)).
-rewrite (Iso_eq) with (B:=C) (f:=f') (g:=g') (x:=f x) (y:= f x).
+intro  Iso_eq .
+
+Fixpoint Nec_Nat_g (a : nat) : Nec_Nat :=
+match a with
+| 0   => Unit
+| S n => More (Nec_Nat_g n)
+end .
+
+
+(*
+Fixpoint Pos_Nat_f (a : Pos_Nat) : nat :=
+match a with
+| None          => 0
+| Some x        => 1 + (Nec_Nat_f x)
+end.
+*)
+
+Fixpoint Pos_Nat_g (a : nat) : Pos_Nat :=
+match a with
+| 0     => None
+| S n   => Some (Nec_Nat_g n)
+end.
+
+Inductive Nec_Int : Type :=
+| Pos : Nec_Nat -> Nec_Int
+| Neg : Nec_Nat -> Nec_Int
+.
+
+Definition Pos_Int := option Nec_Int.
+
+
 
 (*
 
